@@ -1,6 +1,7 @@
 import { Drawer } from "expo-router/drawer";
 import Header from "../component/Header";
 import { View, Text, Pressable, Image, TouchableOpacity } from "react-native";
+import City from "./city";
 export function CustomDrawerContent({ navigation, items }) {
   const data = [
     {
@@ -61,7 +62,7 @@ export function CustomDrawerContent({ navigation, items }) {
             style={{ padding: 14, marginVertical: 2 }}
             onPress={() =>
               navigation.navigate("city", {
-                searchData: temp,
+                cityData: temp,
               })
             }
             key={temp?.id}

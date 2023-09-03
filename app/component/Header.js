@@ -20,7 +20,6 @@ const Header = () => {
     try {
       const apiKey = "https://rdl-result.com/api";
       axios.get(apiKey + "/getSharingData").then((response) => {
-        console.log("api 2 :- ", response);
         const data = response?.data;
         setCurrentURL(`${data.message} ${data.url}`);
         // setCurrentURL();
