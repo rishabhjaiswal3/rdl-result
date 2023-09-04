@@ -41,6 +41,8 @@ export const convertTo12HourFormat = (time24) => {
       hours -= 12;
     }
   }
-
+  if (time24.includes("AM") || time24.includes("PM")) {
+    return `${hours}:${minutes}`;
+  }
   return `${hours}:${minutes} ${period}`;
 };

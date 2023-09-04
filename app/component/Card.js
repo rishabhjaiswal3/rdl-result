@@ -39,10 +39,10 @@ const Card = ({ imageSource, col, data }) => {
           <Text style={styles.cardTitle}>{previousValue}</Text>
           <Text style={styles.normalText}>{title}</Text>
           <Text style={styles.normalText}>
-            {convertTo12HourFormat(previousDate)}
+            {convertTo12HourFormat(previousDate) ?? "##"}
           </Text>
           <Text style={styles.stripText}>
-            Next Results : {convertTo12HourFormat(currentDate)}
+            Next Results : {convertTo12HourFormat(currentDate) ?? "##"}
           </Text>
         </View>
       </View>
@@ -73,7 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.3)",
   },
   cardTitle: {
-    fontSize: 50,
+    fontSize: 48,
     color: "white",
     textAlign: "center",
   },

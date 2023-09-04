@@ -65,7 +65,9 @@ const City = ({ route }) => {
   };
 
   useEffect(() => {
-    getCardData(currentDate);
+    setInterval(() => {
+      getCardData(currentDate);
+    }, 30000);
   }, [currentDate]);
 
   HeadTable = ["Time/Date", "Number"];
@@ -95,7 +97,7 @@ const City = ({ route }) => {
           padding: 12,
         }}
       >
-        <View style={{ height: 30, width: 210 }}>
+        <View style={{ height: 50, width: 210 }}>
           <Text
             style={{
               color: "green",
