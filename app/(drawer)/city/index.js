@@ -1,43 +1,13 @@
-// import { StatusBar } from "expo-status-bar";
-// import { StyleSheet, Text, View } from "react-native";
-// import { useLocalSearchParams } from "expo-router/src/hooks";
-// import { useEffect } from "react";
-
-// export default function City({ route }) {
-//   const params = useLocalSearchParams();
-
-//   useEffect(() => {
-//     console.log("params and param", params);
-//   }, [params]);
-
-//   return (
-//     <View style={styles.container}>
-//       <Text>City Page sholsdlf d ehre </Text>
-//       <StatusBar style="auto" />
-//     </View>
-//   );
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     backgroundColor: "#fff",
-//     alignItems: "center",
-//     justifyContent: "center",
-//   },
-// });
-
 import { useLocalSearchParams } from "expo-router/src/hooks";
 import { Table, Row, Rows } from "react-native-table-component";
 import { Button, SafeAreaView } from "react-native";
 import { View, StyleSheet, Text, FlatList } from "react-native";
 import React, { useEffect, useState } from "react";
 import moment from "moment-timezone";
-// import DateTimePickerModal from "react-native-modal-datetime-picker";
 import axios from "axios";
 import { convertTo12HourFormat } from "../../service/service";
 import { ScrollView } from "react-native-gesture-handler";
-
+import CustomDatePicker from "../../component/CustomDatePicker";
 const City = ({ route }) => {
   // (new Date(1598051730000));
   const [mode, setMode] = useState("date");
@@ -139,50 +109,8 @@ const City = ({ route }) => {
           </Text>
         </View>
 
-        <SafeAreaView>
-          <Text
-            onPress={showDatepicker}
-            style={{
-              fontSize: 16,
-              marginLeft: 4,
-              color: "white",
-              fontWeight: "medium",
-              backgroundColor: "green",
-              padding: 10,
-            }}
-          >
-            {moment(currentDate).format("DD-MM-YYYY")}
-          </Text>
-          {/* <DateTimePickerModal
-            isVisible={show} // Use your state variable here
-            mode={mode}
-            date={currentDate}
-            onConfirm={onChange}
-            onCancel={() => setShow(false)}
-            maxDate={new Date(moment().tz("Asia/Kolkata"))}
-          /> */}
-
-          {/* <DateTimePickerModal
-            date={date}
-            mode={mode}
-            format="DD-MM-YYYY"
-            confirmBtnText="Confirm"
-            cancelBtnText="Cancel"
-            customStyles={{
-              dateIcon: {
-                display: "none",
-              },
-              dateInput: {
-                backgroundColor: "red",
-                borderWidth: 0,
-              },
-              dateText: {
-                color: "white",
-              },
-            }}
-            onConfirm={onChange}
-            onCancel={() => setShow(false)}
-          /> */}
+        <SafeAreaView style={{ backgroundColor: "green", padding: 6 }}>
+          <CustomDatePicker date={currentDate} setDate={setCurrentDate} />
         </SafeAreaView>
       </View>
       <Table>

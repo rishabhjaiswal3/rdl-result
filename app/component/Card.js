@@ -55,7 +55,7 @@ const styles = StyleSheet.create({
     margin: 10,
     height: 130,
     width: width / 2 - 20, // Calculate width based on screen width and desired margins
-    backgroundColor: "yellow",
+    backgroundColor: "#FEC200",
     borderRadius: 4,
     overflow: "hidden",
     position: "relative",
@@ -83,7 +83,7 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   stripText: {
-    backgroundColor: "yellow",
+    backgroundColor: "#FEC200",
     textAlign: "center",
     marginBottom: 4,
     marginHorizontal: 3,
