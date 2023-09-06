@@ -1,5 +1,12 @@
 import React from "react";
-import { View, Text, Image, StyleSheet, Dimensions } from "react-native";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Dimensions,
+  PixelRatio,
+} from "react-native";
 import { useRouter } from "expo-router";
 import { convertTo12HourFormat } from "../service/service";
 const { width } = Dimensions.get("window"); // Get the screen width
@@ -9,6 +16,8 @@ import { createStackNavigator } from "@react-navigation/stack";
 const Stack = createStackNavigator();
 
 const Card = ({ imageSource, col, data }) => {
+  const fontScale = PixelRatio.getFontScale();
+  const getFontSize = (size) => size / fontScale;
   const navigation = useNavigation();
 
   const { title, timesList, values, id } = data;
@@ -36,13 +45,24 @@ const Card = ({ imageSource, col, data }) => {
           resizeMode="cover"
         />
         <View style={styles.textContainer}>
-          <Text style={styles.cardTitle}>{previousValue}</Text>
+          <Text
+            style={{
+              color: "white",
+              textAlign: "center",
+              fontWeight: "400",
+              fontSize: getFontSize(55),
+            }}
+          >
+            {isNaN(previousValue) || previousValue >= 10
+              ? previousValue
+              : `0${previousValue}`}
+          </Text>
           <Text style={styles.normalText}>{title}</Text>
           <Text style={styles.normalText}>
             {convertTo12HourFormat(previousDate) ?? "##"}
           </Text>
           <Text style={styles.stripText}>
-            Next Results : {convertTo12HourFormat(currentDate) ?? "##"}
+            Next Result - {convertTo12HourFormat(currentDate) ?? "##"}
           </Text>
         </View>
       </View>
@@ -52,7 +72,10 @@ const Card = ({ imageSource, col, data }) => {
 
 const styles = StyleSheet.create({
   cardContainer: {
-    margin: 10,
+    marginLeft: 10,
+    marginRight: 10,
+    marginBottom: 15,
+    marginTop: 4,
     height: 130,
     width: width / 2 - 20, // Calculate width based on screen width and desired margins
     backgroundColor: "#FEC200",
@@ -70,23 +93,20 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     justifyContent: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.3)",
-  },
-  cardTitle: {
-    fontSize: 48,
-    color: "white",
-    textAlign: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.4)",
   },
   normalText: {
     textAlign: "center",
     color: "white",
-    marginBottom: 2,
+    marginBottom: 1,
+    fontSize: 14,
   },
   stripText: {
     backgroundColor: "#FEC200",
     textAlign: "center",
-    marginBottom: 4,
-    marginHorizontal: 3,
+    marginBottom: 7,
+    marginHorizontal: 2,
+    fontSize: 13,
     // margin: 2,
     // marginTop: 2,
   },

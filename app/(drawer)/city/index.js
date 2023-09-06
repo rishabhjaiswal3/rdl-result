@@ -1,74 +1,99 @@
 import { useLocalSearchParams } from "expo-router/src/hooks";
 import { Table, Row, Rows } from "react-native-table-component";
-import { Button, SafeAreaView } from "react-native";
+import { SafeAreaView } from "react-native";
 import { View, StyleSheet, Text, FlatList } from "react-native";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import moment from "moment-timezone";
 import axios from "axios";
 import { convertTo12HourFormat } from "../../service/service";
 import { ScrollView } from "react-native-gesture-handler";
 import CustomDatePicker from "../../component/CustomDatePicker";
-const City = ({ route }) => {
-  // (new Date(1598051730000));
-  const [mode, setMode] = useState("date");
-  const [show, setShow] = useState(false);
-  const [currentState, setCurrentState] = useState("");
-  const [items, setItems] = useState([]);
-  const [currentDate, setCurrentDate] = useState(
-    new Date(moment().tz("Asia/Kolkata"))
-  );
 
+const City = ({ route }) => {
+  const myDate = useRef(null);
+  const [currentState, setCurrentState] = useState(myDate.current);
+  const [items, setItems] = useState([]);
+  const [currentDate, setCurrentDate] = useState();
   const params = useLocalSearchParams();
   const { cityData } = params;
 
   if (currentState !== cityData?.title) {
+    myDate.current = moment(new Date()).tz("Asia/Kolkata").format("YYYY/MM/DD");
     setCurrentState(cityData?.title);
   }
-
-  useEffect(() => {
-    setCurrentDate(new Date(moment().tz("Asia/Kolkata")));
-  }, [currentState]);
-
-  const onChange = (event) => {
-    console.log("my date is", event);
-    const currentDate = event;
-    setShow(false);
-    setCurrentDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const showDatepicker = () => {
-    showMode("date");
-  };
-
-  const showTimepicker = () => {
-    showMode("time");
-  };
-
-  console.log("===============>", cityData);
 
   let HeadTable = ["Head1", "Head2"];
   let DataTable = [];
 
-  const getCardData = (date) => {
+  const TableRow = (data) => {
+    return (
+      <View style={styles.table}>
+        <View style={styles.row0}>
+          <View style={styles.cell0}>
+            <Text style={styles.cellText}>Time/Date</Text>
+          </View>
+          <View style={styles.cell}>
+            <Text style={styles.cellText}>Number</Text>
+          </View>
+        </View>
+        <ScrollView>
+          {data.map((res) => {
+            return (
+              <View style={styles.row}>
+                <View style={styles.cell0}>
+                  <Text style={styles.cellText}>{res[0]}</Text>
+                </View>
+                <View style={styles.cell}>
+                  <Text style={styles.cellText}>{res[1]}</Text>
+                </View>
+              </View>
+            );
+          })}
+        </ScrollView>
+      </View>
+    );
+  };
+
+  const getCardData = () => {
     const apiKey = "https://rdl-result.com/api";
-    const newDate = moment(date).tz("Asia/Kolkata").format("YYYY/MM/DD");
-    axios
-      .post(apiKey + "/getClientSideData", { date: newDate })
-      .then((response) => {
-        setItems(response?.data?.logs);
-      });
+    console.log(
+      "date before calling api ================================================",
+      currentDate,
+      myDate.current
+    );
+    if (myDate?.current) {
+      axios
+        .post(apiKey + "/getClientSideData", { date: myDate.current })
+        .then((response) => {
+          // console.log("response is", response);
+          if (items != response?.data?.logs) {
+            setItems(response?.data?.logs);
+          }
+        });
+    }
+  };
+
+  const setMyCurrentDate = (date) => {
+    setCurrentDate(date);
+    getCardData();
+    myDate.current = date;
   };
 
   useEffect(() => {
+    console.log("my current date is", currentDate);
     setInterval(() => {
-      getCardData(currentDate);
-    }, 30000);
-  }, [currentDate]);
+      getCardData();
+    }, 20000);
+  }, []);
+
+  useEffect(() => {
+    setCurrentDate(moment(new Date()).tz("Asia/Kolkata").format("YYYY/MM/DD"));
+    myDate.current = moment(new Date()).tz("Asia/Kolkata").format("YYYY/MM/DD");
+  }, [currentState]);
+
+  useEffect(() => {
+    getCardData();
+  }, [myDate?.current]);
 
   HeadTable = ["Time/Date", "Number"];
   let currentData = items.filter((item) => {
@@ -77,15 +102,35 @@ const City = ({ route }) => {
 
   if (currentData.length > 0) {
     DataTable = currentData[0]?.values.map((val, index) => {
-      return [convertTo12HourFormat(currentData[0]?.timesList[index]), val];
+      // val %= 100;
+      if (isNaN(val)) {
+        return [
+          convertTo12HourFormat(currentData[0]?.timesList[index]),
+          // index == currentData.length ? val : val > 10 ? val : `0${val}`,
+          val,
+        ];
+      } else {
+        val = val >= 100 ? 0 : val;
+        return [
+          convertTo12HourFormat(currentData[0]?.timesList[index]),
+          // index == currentData.length ? val : ,
+          val >= 10 ? val : `0${val}`,
+        ];
+      }
     });
+    DataTable.reverse();
   }
-
+  // currentData = currentData.reverse();
+  console.log(
+    "my current Date is",
+    currentDate,
+    "my useRef Date is",
+    currentData
+  );
   return (
     <View
       style={{
         backgroundColor: "#FEC200",
-        // marginBottom: 10,
         flex: 1,
         minHeight: 200,
       }}
@@ -94,16 +139,24 @@ const City = ({ route }) => {
         style={{
           flexDirection: "row",
           alignItems: "center",
-          padding: 12,
+          paddingTop: 12,
+          paddingLeft: 12,
+          paddingRight: 12,
         }}
       >
         <View style={{ height: 50, width: 210 }}>
           <Text
             style={{
               color: "green",
-              fontSize: 26,
-              marginLeft: 20,
+              fontSize: 30,
+              marginLeft: 10,
               fontWeight: "bold",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              marginTop: 5,
+              textAlign: "Left",
+              height: 50,
               marginRight: 10, // Add some spacing between the two Text elements
             }}
           >
@@ -112,32 +165,11 @@ const City = ({ route }) => {
         </View>
 
         <SafeAreaView style={{ backgroundColor: "green", padding: 6 }}>
-          <CustomDatePicker date={currentDate} setDate={setCurrentDate} />
+          <CustomDatePicker date={myDate} setDate={setMyCurrentDate} />
         </SafeAreaView>
       </View>
-      <Table>
-        <View style={{ margin: 10 }}>
-          <Row
-            style={styles.HeadTableTextData}
-            data={HeadTable}
-            textStyle={styles.headText}
-          />
-        </View>
-      </Table>
 
-      <ScrollView>
-        <Table>
-          <View>
-            <ScrollView>
-              <Rows
-                style={styles.TableTextData}
-                data={DataTable}
-                textStyle={styles.text}
-              />
-            </ScrollView>
-          </View>
-        </Table>
-      </ScrollView>
+      {TableRow(DataTable)}
     </View>
   );
 };
@@ -154,28 +186,17 @@ const styles = StyleSheet.create({
     alignContent: "center",
     backgroundColor: "#ffe0f0",
   },
-  TableText: {
-    margin: 10,
-  },
   headText: {
-    textAlign: "center",
-    fontSize: 20,
+    marginLeft: 25,
+    fontSize: 18,
   },
   text: {
-    textAlign: "center",
-    fontSize: 16,
+    marginLeft: 36,
+    fontSize: 18,
   },
   HeadTableTextData: {
-    marginTop: 10,
+    // marginTop: 10,
     marginRight: 3,
-    // textAlign: "center",
-    // flex: 1,
-    display: "flex",
-    alignItems: "center",
-    alignContent: "center",
-    alignSelf: "ceter",
-    justifyContent: "center",
-    paddingLeft: 6,
   },
   dataWrapper: {
     flex: 1,
@@ -184,22 +205,54 @@ const styles = StyleSheet.create({
   },
   TableTextData: {
     marginTop: 10,
-    // marginRight: 3,
     display: "flex",
-    justifyContent: "center",
-    alignContent: "center",
-    textAlign: "center",
     borderWidth: 1,
     borderBottomColor: "grey",
     borderTopColor: "transparent",
     borderLeftColor: "transparent",
     borderRightColor: "transparent",
     fontSize: "50px",
-    // borderBlockColor: "grey",
   },
   datePicker: {
     backgroundColor: "red",
     color: "red",
+  },
+  table: {
+    flexDirection: "column",
+    marginBottom: 100,
+    // borderWidth: 1,
+    // borderColor: "black",
+  },
+  row0: {
+    flexDirection: "row",
+    marginBottom: 10,
+
+    // borderBottomWidth: 1,
+    // borderColor: "black",
+  },
+  row: {
+    flexDirection: "row",
+    borderBottomWidth: 1,
+    borderColor: "black",
+  },
+  cell0: {
+    flex: 1,
+    // padding: 8,
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
+    marginLeft: 25,
+    // justifyContent: "center",
+    // alignItems: "center",
+  },
+  cell: {
+    flex: 1,
+    // padding: 8,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  cellText: {
+    textAlign: "center",
+    fontSize: 19,
   },
 });
 

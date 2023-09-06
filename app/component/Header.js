@@ -58,7 +58,7 @@ const Header = () => {
           style={styles.headerIcon}
         />
         <TouchableOpacity onPress={() => onShare()} style={styles.shareButton}>
-          <Text style={styles.shareButtonText}>Share</Text>
+          <Text style={styles.shareButtonText}>SHARE</Text>
         </TouchableOpacity>
       </View>
     </View>

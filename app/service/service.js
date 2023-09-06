@@ -33,6 +33,10 @@ export const getShareUrl = async () => {
 
 export const convertTo12HourFormat = (time24) => {
   let [hours, minutes] = time24.split(":");
+  if (time24.includes("AM") || time24.includes("PM")) {
+    return `${hours}` + `:${minutes}`;
+  }
+
   let period = "AM";
 
   if (hours >= 12) {
@@ -40,9 +44,9 @@ export const convertTo12HourFormat = (time24) => {
     if (hours > 12) {
       hours -= 12;
     }
+    if (hours < 10) {
+      return `0${hours}` + `:${minutes} ${period}`;
+    }
   }
-  if (time24.includes("AM") || time24.includes("PM")) {
-    return `${hours}:${minutes}`;
-  }
-  return `${hours}:${minutes} ${period}`;
+  return `${hours}` + `:${minutes} ${period}`;
 };

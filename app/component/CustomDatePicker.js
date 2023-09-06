@@ -1,39 +1,27 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, Modal, TouchableOpacity, StyleSheet } from "react-native";
 import DatePicker from "react-native-modern-datepicker";
 import moment from "moment-timezone";
 
 const CustomDatePicker = ({ date, setDate }) => {
   const [open, setOpen] = useState(false);
-  const newDate = moment(date).tz("Asia/Kolkata").format("YYYY/MM/DD");
-  const [selectedDate, setSelectedDate] = useState(newDate);
+  const [selectedDate, setSelectedDate] = useState(date ? date?.current : "");
   const handleOnPressChange = () => {
-    const [year, month, tempDate] = selectedDate.split("/");
-
-    const newDate =
-      Number(year).toString() +
-      "-" +
-      Number(month).toString() +
-      "-" +
-      tempDate.toString();
-
-    setDate(moment(new Date(newDate)).tz("Asia/Kolkata"));
+    console.log("set  my date is", selectedDate);
+    setDate(selectedDate);
     setOpen(false);
   };
+
   const handleOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
-    setSelectedDate(moment(date).tz("Asia/Kolkata").format("YYYY/MM/DD"));
+    setSelectedDate(
+      moment(date?.current).tz("Asia/Kolkata").format("YYYY/MM/DD")
+    );
     setOpen(false);
   };
-
-  const handleChange = (nDate) => {
-    setDate(nDate);
-  };
-
-  console.log("my date is", newDate);
 
   return (
     <View>
@@ -46,7 +34,7 @@ const CustomDatePicker = ({ date, setDate }) => {
             padding: 4,
           }}
         >
-          {moment(date).tz("Asia/Kolkata").format("DD-MM-YYYY")}
+          {date ? date?.current.toString().replaceAll("/", "-") : ""}
         </Text>
       </TouchableOpacity>
       <Modal animationType="slide" transparent={true} visible={open}>
@@ -54,14 +42,15 @@ const CustomDatePicker = ({ date, setDate }) => {
           <View style={styles.modalView}>
             <DatePicker
               mode="calendar"
-              current={selectedDate}
-              selected={selectedDate}
+              current={date?.current.toString().replaceAll("/", "-")}
+              selected={date?.current.toString().replaceAll("/", "-")}
               options={{
                 textHeaderColor: "#007201",
                 mainColor: "#007201",
               }}
               onDateChange={(date) => {
-                setSelectedDate(date);
+                console.log("my date====>", date);
+                setSelectedDate(date.toString().replaceAll("-", "/"));
               }}
               maximumDate={moment(new Date())
                 .tz("Asia/Kolkata")
